@@ -181,6 +181,9 @@
 <dimension x1="59.055" y1="55.245" x2="73.5" y2="50" x3="102.25" y3="52.6225" textsize="1.27" layer="47" dtype="vertical"/>
 <dimension x1="59.055" y1="55.245" x2="73.5" y2="50" x3="66.2775" y3="-18.75" textsize="1.27" layer="47" dtype="horizontal"/>
 <dimension x1="41.275" y1="55.245" x2="26.5" y2="50" x3="33.8875" y3="-17.75" textsize="1.27" layer="47" dtype="horizontal"/>
+<text x="1.905" y="22.225" size="2.54" layer="25">S.Harrison</text>
+<text x="1.905" y="14.605" size="2.54" layer="25">V1</text>
+<text x="1.905" y="18.415" size="2.54" layer="25">7 Dec 2016</text>
 </plain>
 <libraries>
 <library name="Tinamous">
