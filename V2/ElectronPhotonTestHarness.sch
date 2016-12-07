@@ -10695,8 +10695,8 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="SUPPLY10" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="SUPPLY1" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="GND17" library="SparkFun-Aesthetics" deviceset="DGND" device=""/>
-<part name="JP4" library="SparkFun-Connectors" deviceset="M06" device="SILK_FEMALE_PTH"/>
-<part name="JP5" library="SparkFun-Connectors" deviceset="M06" device="SILK_FEMALE_PTH"/>
+<part name="JP4" library="SparkFun-Connectors" deviceset="M06" device="SILK_FEMALE_PTH" value="FTDI Serial Output"/>
+<part name="JP5" library="SparkFun-Connectors" deviceset="M06" device="SILK_FEMALE_PTH" value="TestConnector"/>
 <part name="GND18" library="SparkFun-Aesthetics" deviceset="DGND" device=""/>
 <part name="C1" library="SparkFun-Capacitors" deviceset="1.0UF-25V-+80/-20(0805)" device="&quot;" value="1.0uF"/>
 <part name="C3" library="SparkFun-Capacitors" deviceset="1.0UF-25V-+80/-20(0805)" device="&quot;" value="1.0uF"/>
@@ -10710,7 +10710,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="GND19" library="SparkFun-Aesthetics" deviceset="DGND" device=""/>
 <part name="TP3" library="testpad" deviceset="TP" device="TP12SQ"/>
 <part name="U$3" library="Particle" deviceset="RELAY" device="SONGLE"/>
-<part name="U$4" library="Particle" deviceset="RELAY" device="SONGLE"/>
 </parts>
 <sheets>
 <sheet>
@@ -10839,7 +10838,6 @@ Electon to use own 3v3 reg.</text>
 <instance part="GND19" gate="G$1" x="35.56" y="63.5"/>
 <instance part="TP3" gate="G$1" x="66.04" y="68.58" rot="R180"/>
 <instance part="U$3" gate="G$1" x="-7.62" y="33.02"/>
-<instance part="U$4" gate="G$1" x="17.78" y="-30.48"/>
 </instances>
 <busses>
 </busses>
@@ -11668,30 +11666,29 @@ Electon to use own 3v3 reg.</text>
 <approved hash="104,1,152.4,20.32,U2,3V3,3V3_TEST,,,"/>
 <approved hash="206,1,55.88,76.2,3.3V,,,,,"/>
 <approved hash="206,1,55.88,73.66,3.3V,,,,,"/>
-<approved hash="208,1,20.32,2.54,3.3V,sup,,,,"/>
+<approved hash="208,1,5.08,-7.62,3.3V,sup,,,,"/>
 <approved hash="208,1,55.88,76.2,3.3V,out,,,,"/>
 <approved hash="208,1,55.88,73.66,3.3V,out,,,,"/>
 <approved hash="208,1,58.42,78.74,3.3V,sup,,,,"/>
-<approved hash="106,1,152.4,40.64,N$22,,,,,"/>
+<approved hash="106,1,152.4,78.74,N$14,,,,,"/>
+<approved hash="106,1,152.4,76.2,N$17,,,,,"/>
+<approved hash="106,1,152.4,48.26,N$21,,,,,"/>
 <approved hash="106,1,152.4,17.78,RST_TEST,,,,,"/>
 <approved hash="106,1,152.4,15.24,VBATT_TEST,,,,,"/>
-<approved hash="108,1,106.68,-10.16,B5,,,,,"/>
-<approved hash="108,1,58.42,76.2,3.3V,,,,,"/>
-<approved hash="108,1,-10.16,76.2,VIN,,,,,"/>
 <approved hash="113,1,-30.1583,-77.47,D1,,,,,"/>
-<approved hash="113,1,-12.3783,-77.47,D3,,,,,"/>
-<approved hash="113,1,-4.75827,-77.47,D4,,,,,"/>
-<approved hash="113,1,10.4817,-77.47,D6,,,,,"/>
-<approved hash="113,1,18.1017,-77.47,D7,,,,,"/>
-<approved hash="113,1,16.7852,-66.04,R1,,,,,"/>
-<approved hash="113,1,9.16517,-66.04,R2,,,,,"/>
-<approved hash="113,1,-6.07483,-66.04,R4,,,,,"/>
-<approved hash="113,1,-13.6948,-66.04,R5,,,,,"/>
+<approved hash="113,1,-22.5383,-77.47,D3,,,,,"/>
+<approved hash="113,1,-14.9183,-77.47,D4,,,,,"/>
+<approved hash="113,1,-7.29827,-77.47,D6,,,,,"/>
+<approved hash="113,1,0.321731,-77.47,D7,,,,,"/>
+<approved hash="113,1,-0.994831,-66.04,R1,,,,,"/>
+<approved hash="113,1,-8.61483,-66.04,R2,,,,,"/>
+<approved hash="113,1,-16.2348,-66.04,R4,,,,,"/>
+<approved hash="113,1,-23.8548,-66.04,R5,,,,,"/>
 <approved hash="113,1,-31.4748,-66.04,R7,,,,,"/>
 <approved hash="113,1,-36.2373,76.3947,JP3,,,,,"/>
 <approved hash="113,1,48.26,71.6026,U3,,,,,"/>
-<approved hash="113,1,133.943,-40.4453,JP4,,,,,"/>
-<approved hash="113,1,67.9027,45.9147,JP5,,,,,"/>
+<approved hash="113,1,55.2027,30.6747,JP4,,,,,"/>
+<approved hash="113,1,62.8227,-17.5853,JP5,,,,,"/>
 </errors>
 </schematic>
 </drawing>
