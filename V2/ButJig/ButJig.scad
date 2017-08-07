@@ -2,6 +2,9 @@
 // Top left mount hole (with DUT vertical) is key alignment hole.
 // Pin 1 X Offset from key hole = 14.78mm
 // Pin 1 Y offset from key hole = 5.25mm (towards 0)
+
+buildBase = true;
+buildPushDown = true;
    
  $fn=80;
 cubeWidth = 60;
@@ -27,6 +30,18 @@ pin1ToMountingHoleDistance =  5.25;
 
 usbPlugWidth = 15;
 
+// Mounting holes for us are 47mm across.
+// 60 - 47 = 13 
+// 13/2 = 6.5
+holesXOffset = (60-47) / 2;
+// How far down the block the mounting holes for the block are.
+// 16mm is about the maximum that can be used without modifying the mounting block.
+holesYOffset = 16; // 16mm gap between ext test input and top hole.
+
+// The position of pin one on the test fixture
+// this is constant
+pin1Position = holesYOffset - pin1ToMountingHoleDistance;  
+
 ////////////////////////////////////////////////////////////////////
 // Test Fixture properties.
 // Board specific
@@ -36,12 +51,14 @@ usbPlugWidth = 15;
 // Environmental PCB
 // -----------------------------------------------------------------
 /*
-// Board under test properties.
+// Device under test properties.
 pin1ToPcbEdge =  9; //8.5; //mm from front edge.
-pcbPinOffset = 14.4
+pcbPinOffset = 14.4;
+pcbPin2Offset = 14.4;
 pcbWidth = 34.5; //mm
 pcbLength = 96;
 pcbSupportBarLength = 53;
+textLabel = "Thermo";
 
 // TODO: Change this for the actual position.
 oshLedXCutout = 0;
@@ -50,29 +67,41 @@ oshLedLength = 11;  // y axis.
 oshLedWidth = 7; 
 oshLedDepth = 2; 
 
+showThermocouplePcb = true;
+showQuadFetsPcb = false;
+showEnvironmentV2Pcb = false;
+*/
+
+
 ////////////////////////////////////////////////////////////////////
 // QUad Fets PCB
 // -----------------------------------------------------------------
-
-// Board under test properties.
+/*
+// Device under test properties.
 pin1ToPcbEdge =  10; //8.95mm from front edge.
-pcbPinOffset = 14.4
+pcbPinOffset = 14.4;
+pcbPin2Offset = 14.4;
 pcbWidth = 42; //mm on X Axis.
 pcbLength = 99; // on Y Axis.
 pcbSupportBarLength = 53;
+textLabel = "N-FETs";
 
 oshLedXCutout = 0;
 oshLedYCutout = 0; 
 oshLedLength = 11;  // y axis.
 oshLedWidth = 7; 
 oshLedDepth = 2; 
+
+showThermocouplePcb = false;
+showQuadFetsPcb = true;
+showEnvironmentV2Pcb = false;
 */
 
 ////////////////////////////////////////////////////////////////////
 // Environment V2
 // -----------------------------------------------------------------
 
-// Board under test properties.
+// Device under test properties.
 pin1ToPcbEdge =  3.8;
 pcbPinOffset = 13.97;
 pcbPin2Offset = 46.36;
@@ -80,6 +109,7 @@ pcbWidth = 33; // 31.75; //mm on X Axis.
 pcbLength = 98.98; // on Y Axis.
 // Lenfth of the middle bar with the pins on
 pcbSupportBarLength = 55;
+textLabel = "Env. V2";
 
 oshLedXCutout = 0;
 oshLedYCutout = 0; 
@@ -87,30 +117,35 @@ oshLedLength = 11;  // y axis.
 oshLedWidth = 7; 
 oshLedDepth = 0; 
 
+showThermocouplePcb = false;
+showQuadFetsPcb = false;
+showEnvironmentV2Pcb = true;
+
+
+/////////////////////////////////////////////////////////////////////
+// Position of the PCB front edge
+// Computed from the specified distance of pin 1 to the pcb edge.
+frontEdgePosition = pin1Position - pin1ToPcbEdge;
+echo ("frontEdgePosition:", frontEdgePosition);
+
 /////////////////////////////////////////////////////////////////////
 
+// Cut out for the 3v3 resistor on the test rig PCB
 module boardResistorCutout() {
     cube([4,4,2]);
 }
 
 // block mounting hole is holesYOffset mm from the front edge.
-module pcbCutout(holesYOffset) {
-    
-// The position of pin one on the test fixture
-// this is constant
-pin1Position = holesYOffset - pin1ToMountingHoleDistance;    
-    
+module pcbCutout() {
+        
 // Work back from the computed Pin 1 Position to find where the 
 // edge of the PCB should be.
-frontEdgePosition = pin1Position - pin1ToPcbEdge;
 xOffset = (cubeWidth - pcbWidth)/2;
-
-echo (frontEdgePosition);
 
     // add 2mm tollerance to the front/rear position of the PCB
     // as the finish may be rough and mounting pins are the most critical
-    translate([xOffset, frontEdgePosition -2 , pcbZPosition]) {
-        cube([pcbWidth, pcbLength + 4, bodyHeight - pcbZPosition + 0.01]);
+    translate([xOffset, frontEdgePosition -1 , pcbZPosition]) {
+        cube([pcbWidth, pcbLength + 2, bodyHeight - pcbZPosition + 0.01]);
     }
     
     // OSH LED on Thermocouple PCB
@@ -128,19 +163,16 @@ echo (frontEdgePosition);
 }
 
 // block mounting hole is holesYOffset mm from the front edge.
-module pcbPin(holesYOffset, offset) {
-//offset = 14.4; // ThermoCouple // mm from front edge.
-    
-pin1Position = holesYOffset - pin1ToMountingHoleDistance;    
-//pin1ToPcbEdge =   pin1ToPcbEdge; //mm from front edge.
-frontEdgePosition = pin1Position - pin1ToPcbEdge;
+module pcbPin(offset) {
     
 xOffset = (cubeWidth /2);
-yOffset = frontEdgePosition + offset;
-echo ("yOffset:",yOffset);
+yPosition = frontEdgePosition + offset;
+    
+echo ("Offset:", offset);
+echo ("yPosition:",yPosition);
 echo ("pcbZPosition:",pcbZPosition);
     
-    translate([xOffset, yOffset, pcbZPosition]) {
+    translate([xOffset, yPosition, pcbZPosition]) {
         cylinder(d1=2.8, d2=2.4, h=4);
     }
 }
@@ -148,8 +180,13 @@ echo ("pcbZPosition:",pcbZPosition);
 // Cut out a section to allow for a USB plug to have
 // been soldered to the PCB.
 module usbConnectorCutout() {
-    translate([(cubeWidth - usbPlugWidth)/2, -5, pcbZPosition-4]) {
-        cube([usbPlugWidth, 8+5, 8]);
+    
+echo("USB pcbPinOffset: ", pcbPinOffset);
+pinPosition = frontEdgePosition + pcbPinOffset;
+    
+    translate([(cubeWidth - usbPlugWidth)/2, 0, pcbZPosition-4]) {
+        // Go most of the way to the first PCB pin.
+        #cube([usbPlugWidth, pinPosition -2, 8]);
     }
 }
 
@@ -198,10 +235,18 @@ holeDiameter = 3.6;
     mountHole(47,46, false, true, holeDiameter);
 }
 
-module  pin1Marker() {
+
+module addText(zPosition, height) {
+    translate([8,18,zPosition]) {
+        rotate([0,0,90]) {
+            linear_extrude(h=height) {
+                #text(textLabel, size=7);
+            }
+        }
+    }
 }
 
-module mainBody(holesXOffset, holesYOffset) {
+module mainBody(holesXOffset) {
     difference() {
         union() {
             color("blue") {
@@ -225,21 +270,14 @@ module mainBody(holesXOffset, holesYOffset) {
             // PCB (for 3v3 LED), need to nibble out a little from that corner
             // to prevent it clashing
             boardResistorCutout();
+            
+            addText(bodyHeight-1, 1);            
         }
     }
 }
 
 module body() {
-
-// holes are 47mm across.
-// 60 - 47 = 13 
-// 13/2 = 6.5
-holesXOffset = (60-47) / 2;
-// How far down the block the mounting holes for the block are.
-// 16mm is about the maximum that can be used without modifying the mounting block.
-holesYOffset = 16; // 16mm gap between ext test input and top hole.
-
-    
+   
 // Pin 1 is 5.25mm from (top hole?) - smaller y.
     // pin1ToMountingHoleDistance
     
@@ -251,7 +289,7 @@ holesYOffset = 16; // 16mm gap between ext test input and top hole.
     
     difference() {
         union() {
-            mainBody(holesXOffset, holesYOffset);
+            mainBody(holesXOffset);
             // Fill in the middle bit to allow for a support pin
             translate([(cubeWidth / 2) -4, 0, 0]) {
                 color("green") {
@@ -265,9 +303,9 @@ holesYOffset = 16; // 16mm gap between ext test input and top hole.
     }
     
     // Add a vertical pin to locate the PCB onto the jig.
-    pcbPin(holesYOffset, pcbPinOffset);
+    pcbPin(pcbPinOffset);
     // Some boards have a second pin.
-    pcbPin(holesYOffset, pcbPin2Offset);
+    pcbPin(pcbPin2Offset);
     
     translate([0,0,0]) {
         // pin1Marker();
@@ -290,6 +328,8 @@ holeDiameter = 4.2; // larger than the base
             }
         }
         union() {
+            addText(height-1, 1);
+            
             translate([holesXOffset,holesYOffset,-0.1]) {
                     mountHole(0,0, false, false, holeDiameter);
                     // This pin is key pin with 0 offset all around?
@@ -301,31 +341,32 @@ holeDiameter = 4.2; // larger than the base
             // Cut out the entire inside for pcb - 5mm (2.5mm either size)
             
              
-                // The position of pin one on the test fixture
-                // this is constant
-                pin1Position = holesYOffset - pin1ToMountingHoleDistance;    
-    
-                // Work back from the computed Pin 1 Position to find where the 
-                // edge of the PCB should be.
-                frontEdgePosition = pin1Position - pin1ToPcbEdge;
-                xOffset = (cubeWidth - pcbWidth)/2;
+            // The position of pin one on the test fixture
+            // this is constant
+            pin1Position = holesYOffset - pin1ToMountingHoleDistance;    
 
-                // add 2mm tollerance to the front/rear position of the PCB
-                // as the finish may be rough and mounting pins are the most critical
-                translate([xOffset+2.5, frontEdgePosition -2 ,- 0.1]) {
-                    cube([pcbWidth-5, pcbLength + 4, height + 0.2]);
-                }
-                
-                // Cut out mare material to make printing faster
-                translate([xOffset-2, frontEdgePosition -2 ,4]) {
-                    cube([pcbWidth+4, pcbLength + 4, height + 0.2]);
-                }
-    
-                // Chop out a bit for the USB plug.
-    
-                translate([(cubeWidth - usbPlugWidth)/2, -5, 0]) {
-                    cube([usbPlugWidth, 8+5, 4]);
-                }
+            // Work back from the computed Pin 1 Position to find where the 
+            // edge of the PCB should be.
+            frontEdgePosition = pin1Position - pin1ToPcbEdge;
+            xOffset = (cubeWidth - pcbWidth)/2;
+
+            // add 2mm tollerance to the front/rear position of the PCB
+            // as the finish may be rough and mounting pins are the most critical
+            translate([xOffset+2.5, frontEdgePosition -2 ,- 0.1]) {
+                #cube([pcbWidth-5, pcbLength + 4, 4 + 0.2]);
+            }
+            
+            // Cut out mare material to make printing faster
+            // Ensure we have a bit at the front to keep the two together
+            translate([xOffset-2, 6 ,4]) {
+                #cube([pcbWidth+4, pcbLength + 4, height + 0.2]);
+            }
+
+            // Chop out a bit for the USB plug.
+
+            translate([(cubeWidth - usbPlugWidth)/2, -5, 0]) {
+                cube([usbPlugWidth, 8+5, 4]);
+            }
                 
         }
     }
@@ -353,28 +394,40 @@ module environmentV2PcbModel() {
     }
 }
 
-// Test harness Pin 1 is .... mm in.
-translate([0,pin1ToMountingHoleDistance,0]) {
-    // PCB.
-    // Pin 1 is 3.81mm from front edge of the PCU (which is 0 
-    // interms of the model)
-    // 2mm off.......
-    translate([(cubeWidth-31.75)/2,3.81-2,pcbZPosition]) {
-        %environmentV2PcbModel();
+module showModels() {
+
+    // Test harness Pin 1 is .... mm in.
+    translate([0,pin1ToMountingHoleDistance,0]) {
+        // PCB.
+        // Pin 1 is 3.81mm from front edge of the PCU (which is 0 
+        // interms of the model)
+        // 2mm off.......
+        translate([(cubeWidth-31.75)/2,3.81-2,pcbZPosition]) {
+            if (showEnvironmentV2Pcb) {
+                %environmentV2PcbModel();
+            }
+            if (showThermocouplePcb) {
+            }
+            if (showQuadFetsPcb) {
+            }
+        }
     }
 }
 
-
+showModels();
 
 // The lower section
-body();
+if (buildBase) {
+    body();
+}
 
 //translate([0,0,20]) { // Debug
 
-translate([cubeWidth+5,0,0]) { // Export
-        // block to help press down the PCB onto the Pogo pins
-        // without touching the PCB by hand.
-        pressDownTool();
+if (buildPushDown) {
+    translate([cubeWidth+5,0,0]) { // Export
+            // block to help press down the PCB onto the Pogo pins
+            // without touching the PCB by hand.
+            pressDownTool();
+    }
 }
-
 
