@@ -1,12 +1,11 @@
+// Base class for all the test jigs
+
 // Critical measurements:
 // Top left mount hole (with DUT vertical) is key alignment hole.
 // Pin 1 X Offset from key hole = 14.78mm
 // Pin 1 Y offset from key hole = 5.25mm (towards 0)
-
-buildBase = true;
-buildPushDown = true;
-   
- $fn=80;
+ 
+$fn=80;
 cubeWidth = 60;
 // Max length to make the cube.
 // PCB may go past the end of it.
@@ -46,81 +45,7 @@ pin1Position = holesYOffset - pin1ToMountingHoleDistance;
 // Test Fixture properties.
 // Board specific
 ////////////////////////////////////////////////////////////////////
-// Thermocouple PCB
-// Latching Relay PCB
-// Environmental PCB
-// -----------------------------------------------------------------
-/*
-// Device under test properties.
-pin1ToPcbEdge =  9; //8.5; //mm from front edge.
-pcbPinOffset = 14.4;
-pcbPin2Offset = 14.4;
-pcbWidth = 34.5; //mm
-pcbLength = 96;
-pcbSupportBarLength = 53;
-textLabel = "Thermo";
-
-// TODO: Change this for the actual position.
-oshLedXCutout = 0;
-oshLedYCutout = 0; 
-oshLedLength = 11;  // y axis.
-oshLedWidth = 7; 
-oshLedDepth = 2; 
-
-showThermocouplePcb = true;
-showQuadFetsPcb = false;
-showEnvironmentV2Pcb = false;
-*/
-
-
-////////////////////////////////////////////////////////////////////
-// QUad Fets PCB
-// -----------------------------------------------------------------
-/*
-// Device under test properties.
-pin1ToPcbEdge =  10; //8.95mm from front edge.
-pcbPinOffset = 14.4;
-pcbPin2Offset = 14.4;
-pcbWidth = 42; //mm on X Axis.
-pcbLength = 99; // on Y Axis.
-pcbSupportBarLength = 53;
-textLabel = "N-FETs";
-
-oshLedXCutout = 0;
-oshLedYCutout = 0; 
-oshLedLength = 11;  // y axis.
-oshLedWidth = 7; 
-oshLedDepth = 2; 
-
-showThermocouplePcb = false;
-showQuadFetsPcb = true;
-showEnvironmentV2Pcb = false;
-*/
-
-////////////////////////////////////////////////////////////////////
-// Environment V2
-// -----------------------------------------------------------------
-
-// Device under test properties.
-pin1ToPcbEdge =  3.8;
-pcbPinOffset = 13.97;
-pcbPin2Offset = 46.36;
-pcbWidth = 33; // 31.75; //mm on X Axis.
-pcbLength = 98.98; // on Y Axis.
-// Lenfth of the middle bar with the pins on
-pcbSupportBarLength = 55;
-textLabel = "Env. V2";
-
-oshLedXCutout = 0;
-oshLedYCutout = 0; 
-oshLedLength = 11;  // y axis.
-oshLedWidth = 7; 
-oshLedDepth = 0; 
-
-showThermocouplePcb = false;
-showQuadFetsPcb = false;
-showEnvironmentV2Pcb = true;
-
+// Will be in subclass file
 
 /////////////////////////////////////////////////////////////////////
 // Position of the PCB front edge
@@ -350,16 +275,19 @@ holeDiameter = 4.2; // larger than the base
             frontEdgePosition = pin1Position - pin1ToPcbEdge;
             xOffset = (cubeWidth - pcbWidth)/2;
 
+            // PCB Cutout
             // add 2mm tollerance to the front/rear position of the PCB
             // as the finish may be rough and mounting pins are the most critical
             translate([xOffset+2.5, frontEdgePosition -2 ,- 0.1]) {
-                #cube([pcbWidth-5, pcbLength + 4, 4 + 0.2]);
+                cube([pcbWidth-5, pcbLength + 4, 4 + 0.2]);
             }
             
-            // Cut out mare material to make printing faster
+            // Bulk cutout.
+            // Cut out more material to make printing faster
             // Ensure we have a bit at the front to keep the two together
-            translate([xOffset-2, 6 ,4]) {
-                #cube([pcbWidth+4, pcbLength + 4, height + 0.2]);
+            cutoutWidth = min(pcbWidth+4,42.5);
+            translate([(cubeWidth-cutoutWidth)/2, 6 ,4]) {
+                #cube([cutoutWidth, pcbLength + 4, height + 0.2]);
             }
 
             // Chop out a bit for the USB plug.
@@ -369,33 +297,24 @@ holeDiameter = 4.2; // larger than the base
             }
                 
         }
-    }
-    
+    }   
 }
 
-module environmentV2PcbModel() {
-    cube([31.75,94,1.6]);
-    // Move to the middle of the PCB.
-    // Move down slightly to bring the markers though 
-    // the 
-    translate([31.75/2,0,-4]) {
-        translate([0,13.97,0]) {
-            cylinder(d=3, h=20);
-        }
-        
-        translate([0, 13.97+32.39,0]) {
-            cylinder(d=3, h=20);
-        }
-        
-        // Pin 1 marker.
-        translate([8.89,3.81,0]) {
-            cylinder(d=1, h=10);
-        }
+// The lower section
+if (buildBase) {
+    body();
+}
+
+if (buildPushDown) {
+    //translate([0,0,20]) { // Debug
+    translate([cubeWidth+5,0,0]) { // Export
+            // block to help press down the PCB onto the Pogo pins
+            // without touching the PCB by hand.
+            pressDownTool();
     }
 }
 
-module showModels() {
-
+if (showModels) {
     // Test harness Pin 1 is .... mm in.
     translate([0,pin1ToMountingHoleDistance,0]) {
         // PCB.
@@ -403,31 +322,10 @@ module showModels() {
         // interms of the model)
         // 2mm off.......
         translate([(cubeWidth-31.75)/2,3.81-2,pcbZPosition]) {
-            if (showEnvironmentV2Pcb) {
-                %environmentV2PcbModel();
-            }
-            if (showThermocouplePcb) {
-            }
-            if (showQuadFetsPcb) {
-            }
+    
+            // Expected to exist in super class.
+            %buildModel();
         }
-    }
-}
-
-showModels();
-
-// The lower section
-if (buildBase) {
-    body();
-}
-
-//translate([0,0,20]) { // Debug
-
-if (buildPushDown) {
-    translate([cubeWidth+5,0,0]) { // Export
-            // block to help press down the PCB onto the Pogo pins
-            // without touching the PCB by hand.
-            pressDownTool();
     }
 }
 
