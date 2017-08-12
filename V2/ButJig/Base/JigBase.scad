@@ -10,7 +10,7 @@ width = 100;
 // Slotted aerial
 
 // Overall length /mm (without aerial 117mm, With aerial 125mm)
-length = 133 + 25;
+length = 133 + 30;
 
 // should be enough to hold the battery
 // Height of the battery compartment
@@ -33,8 +33,9 @@ baseHeight = 2;
 
 // How height off the base the PCB wil lbe.
 // Needs to be 16mm for underneath PCB
-// 4mm is fine for regular
-height = 4;
+// 8mm is fine for regular
+//height = 8;
+height = 16;
 
 // Diameter of the screw hole for the PCB mounts. 4.4mm works well for M3 heatfits.
 pcbMountScrewHoleDiameter = 4.4;
@@ -227,8 +228,8 @@ module base() {
             roundedCube(width, length, baseHeight, 10);
         }
         union() {
-            translate([22.5,0,-0.1]) {
-                //cube([55, 55, 5]);
+            translate([17.5,0,-0.1]) {
+                cube([65, 75, 5]);
             }
             
             translate([26.5, 50, -0.1]) {
@@ -256,7 +257,7 @@ module base() {
 
     if (batteryCompartmentLeft) {
         // Left hand battery compartment
-        translate([0,136,baseHeight]) {
+        translate([0,140,baseHeight]) {
             batteryCompartment();
         }
     }
@@ -264,7 +265,7 @@ module base() {
     if (batteryCompartmentRight) {
         // Right hand battery compartment
         // Battery compartment is 40mm wide.
-        translate([width - 38,136,baseHeight]) {
+        translate([width - 38,140,baseHeight]) {
             batteryCompartment();
         }
     }
@@ -287,7 +288,7 @@ translate([0,0,baseHeight + height]) {
     %pcb();
 }
 
-translate([2,138,baseHeight]) {
+translate([2,142,baseHeight]) {
     %battery();
 }
 
