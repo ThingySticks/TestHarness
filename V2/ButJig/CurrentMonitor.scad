@@ -3,43 +3,49 @@ buildPushDown = true;
 showModels = true;
 
 ////////////////////////////////////////////////////////////////////
-// QUAD N-Channel FETs PCB
+// Environment V2
 // -----------------------------------------------------------------
 // Device under test properties.
-pin1ToPcbEdge =  8.49;
-pcbPinOffset = 14.5;
-pcbPin2Offset = 14.5;
-pcbWidth = 40; //mm on X Axis.
-pcbLength = 99; // on Y Axis.
-pcbSupportBarLength = 20;
-textLabel = "N-FETs";
+pin1ToPcbEdge =  8.57;
+pcbPinOffset = 12.00;
+pcbPin2Offset = 52.00;
+pcbWidth = 32; // 31.75; //mm on X Axis.
+pcbLength = 90; // on Y Axis.
+// Lenfth of the middle bar with the pins on
+pcbSupportBarLength = 55;
+textLabel = "Current";
 
 oshLedXCutout = 0;
 oshLedYCutout = 0; 
 oshLedLength = 11;  // y axis.
 oshLedWidth = 7; 
-oshLedDepth = 2; 
+oshLedDepth = 0; 
 
 include <ButJig.scad>;
 
 
 module buildModel() {
     // Pcb
-    cube([40,99,1.6]);
+    // Don't use variables above as they may need to be 
+    // fudged to give suitable tollerances.
+    cube([32,90,1.6]);
     
     // Move to the middle of the PCB.
     // Move down slightly to bring the markers though 
     // the 
-    translate([40/2, 0, -4]) {
-        // First mounting pin
-        translate([0, 14.5, 0]) {
+    translate([32/2, 0,-4]) {
+        // First mounting hole
+        translate([0,12,0]) {
             cylinder(d=3, h=20);
         }
         
-        // No second pin
+        // Second mounting hole
+        translate([0, 12+40,0]) {
+            cylinder(d=3, h=20);
+        }
         
         // Pin 1 marker.
-        translate([9.19,8.49,0]) {
+        translate([7,8.57,0]) {
             cylinder(d=1, h=10);
         }
         

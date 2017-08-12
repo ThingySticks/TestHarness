@@ -3,43 +3,50 @@ buildPushDown = true;
 showModels = true;
 
 ////////////////////////////////////////////////////////////////////
-// QUAD N-Channel FETs PCB
+// Thermocouple PCB
 // -----------------------------------------------------------------
 // Device under test properties.
-pin1ToPcbEdge =  8.49;
-pcbPinOffset = 14.5;
-pcbPin2Offset = 14.5;
-pcbWidth = 40; //mm on X Axis.
-pcbLength = 99; // on Y Axis.
+pin1ToPcbEdge =  8.3;
+pcbPinOffset = 13.96;
+pcbPin2Offset = 13.96;
+pcbWidth = 31.31; //mm
+pcbLength = 99.04;
 pcbSupportBarLength = 20;
-textLabel = "N-FETs";
+textLabel = "BL-Relay";
 
+// TODO: Change this for the actual position.
 oshLedXCutout = 0;
 oshLedYCutout = 0; 
-oshLedLength = 11;  // y axis.
-oshLedWidth = 7; 
-oshLedDepth = 2; 
+oshLedLength = 0;  // y axis.
+oshLedWidth = 0; 
+oshLedDepth = 0; 
+
+showThermocouplePcb = true;
+showQuadFetsPcb = false;
+showEnvironmentV2Pcb = false;
 
 include <ButJig.scad>;
 
-
 module buildModel() {
     // Pcb
-    cube([40,99,1.6]);
+    cube([31.31,99.04,1.6]);
     
     // Move to the middle of the PCB.
     // Move down slightly to bring the markers though 
     // the 
-    translate([40/2, 0, -4]) {
-        // First mounting pin
-        translate([0, 14.5, 0]) {
+    translate([31.31/2, 0, -4]) {
+        // Mount pin 1
+        translate([0,13.96,0]) {
             cylinder(d=3, h=20);
         }
         
-        // No second pin
+        // Mount pin 2
+        translate([0, 13.96,0]) {
+            cylinder(d=3, h=20);
+        }
         
         // Pin 1 marker.
-        translate([9.19,8.49,0]) {
+        translate([8.89,8.3,0]) {
             cylinder(d=1, h=10);
         }
         

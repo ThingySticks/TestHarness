@@ -15,9 +15,12 @@ bodyHeight = 18;
 
 // FIXED (due to Pogo pins height).
 // PCB needs to be at 13.5mm high for the pogo pins to make best contact.
-pcbZPosition = 13.8;
+pcbZPosition = 13.6;
 
-bodyHeight = 15.1; // pcbZPosition + 1.6; // PCB depth
+// Make it a little higher so that the PCB can 
+// be pressed level with the jig top
+// but keep the POGO pins slightly compressed
+bodyHeight = 15.4; // pcbZPosition + 1.6; // PCB depth
 
 
 // Fixed. the Y distance from pin 1 Pogo pin to the first 
@@ -69,8 +72,9 @@ xOffset = (cubeWidth - pcbWidth)/2;
 
     // add 2mm tollerance to the front/rear position of the PCB
     // as the finish may be rough and mounting pins are the most critical
-    translate([xOffset, frontEdgePosition -1 , pcbZPosition]) {
-        cube([pcbWidth, pcbLength + 2, bodyHeight - pcbZPosition + 0.01]);
+    // And add 0.5mm either size for PCB width tollerance
+    translate([xOffset-0.5, frontEdgePosition -1 , pcbZPosition]) {
+       cube([pcbWidth+1, pcbLength + 2, bodyHeight - pcbZPosition + 0.01]);
     }
     
     // OSH LED on Thermocouple PCB
@@ -111,7 +115,7 @@ pinPosition = frontEdgePosition + pcbPinOffset;
     
     translate([(cubeWidth - usbPlugWidth)/2, 0, pcbZPosition-4]) {
         // Go most of the way to the first PCB pin.
-        #cube([usbPlugWidth, pinPosition -2, 8]);
+        cube([usbPlugWidth, pinPosition -2, 8]);
     }
 }
 
@@ -133,7 +137,7 @@ nutHoleDiameter = 7;
             cylinder(d=nutHoleDiameter, h=4);
         
             translate([0,0,4]) {
-                #cylinder(d1=nutHoleDiameter,d2=holeDiameter, h=10);
+                cylinder(d1=nutHoleDiameter,d2=holeDiameter, h=10);
             }
         }
         
@@ -287,7 +291,7 @@ holeDiameter = 4.2; // larger than the base
             // Ensure we have a bit at the front to keep the two together
             cutoutWidth = min(pcbWidth+4,42.5);
             translate([(cubeWidth-cutoutWidth)/2, 6 ,4]) {
-                #cube([cutoutWidth, pcbLength + 4, height + 0.2]);
+                cube([cutoutWidth, pcbLength + 4, height + 0.2]);
             }
 
             // Chop out a bit for the USB plug.
@@ -315,17 +319,21 @@ if (buildPushDown) {
 }
 
 if (showModels) {
-    // Test harness Pin 1 is .... mm in.
-    translate([0,pin1ToMountingHoleDistance,0]) {
-        // PCB.
-        // Pin 1 is 3.81mm from front edge of the PCU (which is 0 
-        // interms of the model)
-        // 2mm off.......
-        translate([(cubeWidth-31.75)/2,3.81-2,pcbZPosition]) {
     
-            // Expected to exist in super class.
-            %buildModel();
-        }
+    // Is the Y offset where pin1 is located. 
+    // board moddle needs to be positioned so that its
+    // pin 1 is directly over the base pin1
+    // pin1Position
+    
+    
+    // Correct the X and Y positions so that.
+    // x: The model is centered 
+    // y: pin 1 on the model aligns with our pin 1 position.
+    // Y=0 on the model should align eith the position that the PCB fron edge will
+    // be at.
+    translate([(cubeWidth-pcbWidth)/2,pin1Position - pin1ToPcbEdge,pcbZPosition]) {
+        // Expected to exist in super class.
+        %buildModel();
     }
 }
 
